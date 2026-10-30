@@ -9,6 +9,7 @@ import { useAppStore } from '../state/store'
 import { cssColor, drawWaveform } from '../waveform/draw'
 import { drawMarkers } from '../waveform/markers'
 import { useCanvas } from '../waveform/useCanvas'
+import { tr } from '../i18n/tr'
 
 /** Hele låten i ett bilde. Klikk for å hoppe. Det som er spilt, blir mørkere. */
 export function OverviewWaveform({ id, enabled }: { id: DeckId; enabled: boolean }): React.JSX.Element {
@@ -86,7 +87,7 @@ export function OverviewWaveform({ id, enabled }: { id: DeckId; enabled: boolean
       data-tour-id={deckTourId(id, 'position')}
       onPointerDown={seek}
       role="slider"
-      aria-label={`Posisjon i låten på deck ${id}`}
+      aria-label={tr(`Posisjon i låten på deck ${id}`, `Position in the track on deck ${id}`)}
       aria-valuemin={0}
       aria-valuemax={100}
     />

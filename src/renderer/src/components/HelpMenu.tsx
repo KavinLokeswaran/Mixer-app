@@ -1,17 +1,18 @@
 import { useEffect, useRef } from 'react'
 import { dispatch } from '../actions/dispatch'
-import { GROUP_INFO, groupsUnlockedBy, LESSON_IDS } from '../learn/controlGroups'
-import { INTRO, LESSONS } from '../learn/tours'
+import { groupLabel, groupsUnlockedBy, LESSON_IDS } from '../learn/controlGroups'
+import { tourById } from '../learn/tours'
 import { useLearnStore } from '../state/learnStore'
 import { useSettingsStore } from '../state/settingsStore'
+import { tr } from '../i18n/tr'
 
 /** ?-menyen: grunnkurset og leksjonene, med hvilke som er fullført. */
 export function HelpMenu(): React.JSX.Element {
   const open = useLearnStore((s) => s.menuOpen)
   const completed = useSettingsStore((s) => s.completedLessons)
   const introDone = useSettingsStore((s) => s.introDone)
-  const tipsEnabled = useSettingsStore((s) => s.tipsEnabled)
   const ref = useRef<HTMLDivElement>(null)
+  const intro = tourById('intro')!
 
   useEffect(() => {
     if (!open) return
@@ -36,14 +37,14 @@ export function HelpMenu(): React.JSX.Element {
         className="helpmenu__button"
         data-tour-id="help-menu"
         aria-expanded={open}
-        aria-label="Hjelp og leksjoner"
+        aria-label={tr('Hjelp og leksjoner', 'Help and lessons')}
         onClick={() => void dispatch({ type: 'learn/menu', open: !open })}
       >
         ?
       </button>
       {open && (
         <div className="helpmenu__panel" role="menu">
-          <div className="helpmenu__heading">Grunnkurs</div>
+          <div className="helpmenu__heading">{tr('Grunnkurs', 'Basics course')}</div>
           <button
             type="button"
             className="helpmenu__item"
@@ -54,17 +55,17 @@ export function HelpMenu(): React.JSX.Element {
               {introDone ? '✓' : '★'}
             </span>
             <span>
-              <span className="helpmenu__title">{introDone ? 'Ta grunnkurset på nytt' : INTRO.title}</span>
-              <span className="helpmenu__desc">{INTRO.description}</span>
+              <span className="helpmenu__title">
+                {introDone ? tr('Ta grunnkurset på nytt', 'Take the basics course again') : intro.title}
+              </span>
+              <span className="helpmenu__desc">{intro.description}</span>
             </span>
           </button>
-          <div className="helpmenu__heading">Leksjoner</div>
+          <div className="helpmenu__heading">{tr('Leksjoner', 'Lessons')}</div>
           {LESSON_IDS.map((id, i) => {
-            const lesson = LESSONS[id]
+            const lesson = tourById(id)!
             const done = completed.includes(id)
-            const unlocks = groupsUnlockedBy(id)
-              .map((g) => GROUP_INFO[g].label)
-              .join(' og ')
+            const unlocks = groupsUnlockedBy(id).map(groupLabel).join(tr(' og ', ' and '))
             return (
               <button
                 key={id}
@@ -77,26 +78,21 @@ export function HelpMenu(): React.JSX.Element {
                 <span>
                   <span className="helpmenu__title">{lesson.title}</span>
                   <span className="helpmenu__desc">{lesson.description}</span>
-                  <span className="helpmenu__unlocks">{done ? `Låst opp: ${unlocks}` : `Låser opp: ${unlocks}`}</span>
+                  <span className="helpmenu__unlocks">
+                    {done
+                      ? tr(`Låst opp: ${unlocks}`, `Unlocked: ${unlocks}`)
+                      : tr(`Låser opp: ${unlocks}`, `Unlocks: ${unlocks}`)}
+                  </span>
                 </span>
               </button>
             )
           })}
-          <div className="helpmenu__heading">Innstillinger</div>
-          <label className="helpmenu__setting">
-            <input
-              type="checkbox"
-              checked={tipsEnabled}
-              onChange={(e) => void dispatch({ type: 'settings/setTips', value: e.currentTarget.checked })}
-            />
-            <span>Vis små tips underveis</span>
-          </label>
           <button
             type="button"
             className="helpmenu__reset"
-            onClick={() => void dispatch({ type: 'settings/resetTips' })}
+            onClick={() => void dispatch({ type: 'ui/settings', open: true })}
           >
-            Vis tipsene på nytt
+            {tr('Tips, beskrivelser og andre innstillinger …', 'Tips, descriptions and other settings …')}
           </button>
         </div>
       )}

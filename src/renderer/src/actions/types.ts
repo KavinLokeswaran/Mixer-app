@@ -1,3 +1,4 @@
+import type { Settings } from '@shared/settings'
 import type { CrossfaderCurve } from '../audio/curves'
 import type { FxKind } from '../audio/fxMath'
 import type { EqBand } from '../audio/toneMath'
@@ -61,6 +62,9 @@ export type Action =
   | { type: 'settings/setTips'; value: boolean }
   /** Glem hvilke tips som er vist, så de kan vises igjen. */
   | { type: 'settings/resetTips' }
+  /** Utseende, språk, beskrivelser og tastatur. */
+  | { type: 'settings/update'; patch: Partial<Pick<Settings, PreferenceKey>> }
+  | { type: 'ui/settings'; open: boolean }
   | { type: 'tips/dismiss' }
   /** Grunnkurs og leksjoner. `tour` er 'intro' eller en leksjons-ID. */
   | { type: 'learn/start'; tour: string }
@@ -87,3 +91,6 @@ export type Action =
   | { type: 'deck/analysed'; deck: DeckId }
 
 export type ActionType = Action['type']
+
+/** Innstillingene som kan endres fritt fra innstillingssiden. */
+export type PreferenceKey = 'helpBubbles' | 'language' | 'theme' | 'accent' | 'knobKeys' | 'keyStep'

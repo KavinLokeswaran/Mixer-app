@@ -1,3 +1,5 @@
+import { language } from '../i18n/tr'
+
 /**
  * KONTROLLGRUPPER OG SYNLIGHET
  *
@@ -20,6 +22,21 @@ export const GROUP_INFO: Record<ControlGroup, { label: string; lesson: LessonId 
   loops: { label: 'Loops', lesson: 'loops' },
   fx: { label: 'Effekter', lesson: 'fx' },
   recording: { label: 'Opptak', lesson: 'recording' }
+}
+
+const GROUP_LABELS_EN: Record<ControlGroup, string> = {
+  eq: 'EQ (low, mid and high)',
+  filter: 'Filter',
+  trim: 'Trim (gain)',
+  hotcues: 'Hot cues',
+  loops: 'Loops',
+  fx: 'Effects',
+  recording: 'Recording'
+}
+
+/** Navnet på kontrollgruppen, på språket som er valgt. */
+export function groupLabel(group: ControlGroup): string {
+  return language() === 'en' ? GROUP_LABELS_EN[group] : GROUP_INFO[group].label
 }
 
 export interface VisibilityInput {

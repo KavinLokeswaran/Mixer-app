@@ -58,7 +58,9 @@ export const GLOBAL_CONTROLS = [
   'library-load-b',
   'library-skipped',
   'auto-mix',
-  'crossfader-curve'
+  'crossfader-curve',
+  'help-toggle',
+  'settings'
 ] as const
 export type GlobalControl = (typeof GLOBAL_CONTROLS)[number]
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { helpFor } from '../help/helpLookup'
 import type { HelpText } from '../help/helpTexts'
+import { useSettingsStore } from '../state/settingsStore'
 
 const SHOW_DELAY_MS = 700
 const SELECTOR = '[data-help-id], [data-tour-id]:not([data-no-help])'
@@ -13,6 +14,7 @@ interface Bubble {
 /**
  * Hjelpebobler: hold musa over en kontroll en liten stund, så vises en kort forklaring.
  * Teksten hentes fra help/helpTexts.ts ut fra kontrollens data-tour-id.
+ * Kan slås av med «Beskrivelser»-knappen øverst eller i innstillingene.
  */
 export function HelpBubble(): React.JSX.Element | null {
   const [bubble, setBubble] = useState<Bubble | null>(null)
@@ -20,8 +22,10 @@ export function HelpBubble(): React.JSX.Element | null {
   const timer = useRef<number | undefined>(undefined)
   /** Etter et klikk vises ikke boblen igjen før musa har vært borte fra kontrollen. */
   const suppressed = useRef<Element | null>(null)
+  const enabled = useSettingsStore((s) => s.helpBubbles)
 
   useEffect(() => {
+    if (!enabled) return
     const hide = (): void => {
       window.clearTimeout(timer.current)
       setBubble(null)
@@ -57,10 +61,12 @@ export function HelpBubble(): React.JSX.Element | null {
       window.removeEventListener('blur', hide)
       window.removeEventListener('scroll', hide, true)
       window.clearTimeout(timer.current)
+      current.current = null
+      setBubble(null)
     }
-  }, [])
+  }, [enabled])
 
-  if (!bubble) return null
+  if (!bubble || !enabled) return null
   return <BubbleView bubble={bubble} />
 }
 
@@ -92,6 +98,7 @@ function BubbleView({ bubble }: { bubble: Bubble }): React.JSX.Element {
       <div className="help-bubble__title">{bubble.help.title}</div>
       <div className="help-bubble__what">{bubble.help.what}</div>
       {bubble.help.when && <div className="help-bubble__when">{bubble.help.when}</div>}
+      {bubble.help.keys && <div className="help-bubble__keys">{bubble.help.keys}</div>}
     </div>
   )
 }

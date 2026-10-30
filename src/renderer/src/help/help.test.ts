@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DECK_IDS } from '../audio/types'
+import { useSettingsStore } from '../state/settingsStore'
 import { helpFor } from './helpLookup'
 import { DECK_CONTROLS, GLOBAL_CONTROLS, deckTourId, parseDeckTourId } from './tourIds'
 
@@ -33,6 +34,14 @@ describe('hjelpetekster', () => {
       const help = helpFor(id)!
       expect(JSON.stringify(help)).not.toMatch(/\{(deck|key|cueKey)\}/)
     }
+  })
+
+  it('finnes på engelsk også', () => {
+    useSettingsStore.setState({ language: 'en' })
+    expect(helpFor('deck-a-play')?.when).toContain('Shortcut: Q')
+    expect(helpFor('crossfader')?.title).toBe('Crossfader')
+    expect(helpFor('deck-b-trim')?.keys).toContain('6')
+    useSettingsStore.setState({ language: 'nb' })
   })
 
   it('gir null for ukjente ID-er', () => {

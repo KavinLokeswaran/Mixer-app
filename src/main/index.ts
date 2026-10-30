@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
 import { APP_NAME } from '../shared/appInfo'
 import { IPC } from '../shared/ipc'
 import { getAnalysis, saveAnalysis } from './analysisStore'
@@ -24,6 +24,13 @@ app.setName(APP_NAME)
 // Kun for utvikling og automatiske tester: bruk en egen datamappe.
 if (!app.isPackaged && process.env.MIKSEREN_USER_DATA) app.setPath('userData', process.env.MIKSEREN_USER_DATA)
 
+/** Bakgrunnsfargen før siden er lastet, så vinduet ikke blinker i feil farge. */
+function windowBackground(): string {
+  const { theme } = appData().get().settings
+  const light = theme === 'light' || (theme === 'system' && !nativeTheme.shouldUseDarkColors)
+  return light ? '#eef0f4' : '#0e1014'
+}
+
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1440,
@@ -31,7 +38,7 @@ function createWindow(): BrowserWindow {
     minWidth: 1180,
     minHeight: 820,
     title: APP_NAME,
-    backgroundColor: '#0e1014',
+    backgroundColor: windowBackground(),
     show: false,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -91,7 +98,10 @@ app.whenReady().then(() => {
   ipcMain.handle(IPC.getSettings, () => appData().get().settings)
   ipcMain.handle(IPC.updateSettings, (_event, patch: unknown) => {
     const parsed = parseSettingsPatch(patch) ?? {}
-    return appData().update((d) => ({ ...d, settings: { ...d.settings, ...parsed } })).settings
+    const before = appData().get().settings.language
+    const settings = appData().update((d) => ({ ...d, settings: { ...d.settings, ...parsed } })).settings
+    if (settings.language !== before) buildMenu()
+    return settings
   })
   addAccessRule(isLibraryFile)
 

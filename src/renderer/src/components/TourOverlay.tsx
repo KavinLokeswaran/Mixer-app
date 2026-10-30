@@ -4,6 +4,7 @@ import { runStepActions, snapshot } from '../learn/learnController'
 import { tourById } from '../learn/tours'
 import { useLearnStore } from '../state/learnStore'
 import { onTick } from '../ui/ticker'
+import { tr } from '../i18n/tr'
 
 const PAD = 6
 const CARD_WIDTH = 360
@@ -134,7 +135,7 @@ export function TourOverlay(): React.JSX.Element | null {
         style={cardPos ?? { left: -9999, top: 0 }}
       >
         <div className="tour__meta">
-          {tour.title} · Steg {active.step + 1} av {total}
+          {tour.title} · {tr(`Steg ${active.step + 1} av ${total}`, `Step ${active.step + 1} of ${total}`)}
         </div>
         <h3 className="tour__title">{step.title}</h3>
         <p className="tour__text">{step.text}</p>
@@ -157,7 +158,7 @@ export function TourOverlay(): React.JSX.Element | null {
           </div>
         )}
         {active.success ? (
-          <div className="tour__status tour__status--ok">Bra! ✓</div>
+          <div className="tour__status tour__status--ok">{tr('Bra! ✓', 'Nice! ✓')}</div>
         ) : (
           step.done && step.waiting && <div className="tour__status">{step.waiting}</div>
         )}
@@ -168,11 +169,11 @@ export function TourOverlay(): React.JSX.Element | null {
             onClick={() => void dispatch({ type: 'learn/back' })}
             disabled={active.step === 0}
           >
-            ← Tilbake
+            {tr('← Tilbake', '← Back')}
           </button>
           <span className="tour__spacer" />
           <button type="button" className="tour__link" onClick={() => void dispatch({ type: 'learn/exit' })}>
-            Avslutt
+            {tr('Avslutt', 'Quit')}
           </button>
           {step.done ? (
             <button
@@ -181,7 +182,7 @@ export function TourOverlay(): React.JSX.Element | null {
               onClick={() => void dispatch({ type: 'learn/skip' })}
               disabled={active.success}
             >
-              Hopp over steget
+              {tr('Hopp over steget', 'Skip this step')}
             </button>
           ) : (
             <button
@@ -189,7 +190,7 @@ export function TourOverlay(): React.JSX.Element | null {
               className="button button--small button--accent"
               onClick={() => void dispatch({ type: 'learn/next' })}
             >
-              {isLast ? 'Ferdig' : 'Neste →'}
+              {isLast ? tr('Ferdig', 'Done') : tr('Neste →', 'Next →')}
             </button>
           )}
         </div>

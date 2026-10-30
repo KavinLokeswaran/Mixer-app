@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { app, dialog, type BrowserWindow } from 'electron'
 import type { RecordingResult } from '../shared/ipc'
 import { WAV_HEADER_BYTES, WAV_MAX_DATA_BYTES, wavHeader } from '../shared/wav'
+import { tr } from './lang'
 
 /**
  * Opptak av miksen. Lyden skrives fortløpende til en midlertidig fil, så selv
@@ -82,10 +83,10 @@ export async function saveRecording(win: BrowserWindow | null): Promise<Recordin
     target = process.env.MIKSEREN_SMOKE_SAVE_PATH
   } else {
     const options: Electron.SaveDialogOptions = {
-      title: 'Lagre opptaket',
-      buttonLabel: 'Lagre',
+      title: tr('Lagre opptaket', 'Save the recording'),
+      buttonLabel: tr('Lagre', 'Save'),
       defaultPath: join(app.getPath('music'), defaultFileName()),
-      filters: [{ name: 'WAV-lyd', extensions: ['wav'] }]
+      filters: [{ name: tr('WAV-lyd', 'WAV audio'), extensions: ['wav'] }]
     }
     const result = win ? await dialog.showSaveDialog(win, options) : await dialog.showSaveDialog(options)
     if (result.canceled || !result.filePath) return { status: 'unsaved', seconds }
@@ -96,7 +97,14 @@ export async function saveRecording(win: BrowserWindow | null): Promise<Recordin
     pending = null
     return { status: 'saved', path: target, seconds }
   } catch {
-    return { status: 'unsaved', seconds, error: 'Klarte ikke å lagre fila der. Prøv en annen mappe.' }
+    return {
+      status: 'unsaved',
+      seconds,
+      error: tr(
+        'Klarte ikke å lagre fila der. Prøv en annen mappe.',
+        'Could not save the file there. Try a different folder.'
+      )
+    }
   }
 }
 

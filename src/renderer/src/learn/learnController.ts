@@ -4,10 +4,11 @@ import { useLibraryStore } from '../state/libraryStore'
 import { useLearnStore } from '../state/learnStore'
 import { patchSettings, useSettingsStore } from '../state/settingsStore'
 import { useAppStore } from '../state/store'
-import { GROUP_INFO, groupsUnlockedBy } from './controlGroups'
+import { groupLabel, groupsUnlockedBy } from './controlGroups'
 import { TourRunner } from './tourRunner'
 import { tourById } from './tours'
 import type { TourSnapshot } from './tourTypes'
+import { tr } from '../i18n/tr'
 
 /**
  * Kobler grunnkurs og leksjoner til appen: lytter på alle handlinger og på
@@ -94,8 +95,14 @@ function finish(completed: boolean): void {
   if (!settings.completedLessons.includes(tour.id)) {
     patchSettings({ completedLessons: [...settings.completedLessons, tour.id] })
     if (!settings.advancedMode) {
-      const labels = groupsUnlockedBy(tour.id).map((g) => GROUP_INFO[g].label)
-      showToast('Ny kontroll låst opp!', `${labels.join(' og ')} er nå synlig i Enkel modus.`)
+      const labels = groupsUnlockedBy(tour.id).map((g) => groupLabel(g))
+      showToast(
+        tr('Ny kontroll låst opp!', 'New control unlocked!'),
+        tr(
+          `${labels.join(' og ')} er nå synlig i Enkel modus.`,
+          `${labels.join(' and ')} is now visible in Simple mode.`
+        )
+      )
     }
   }
 }

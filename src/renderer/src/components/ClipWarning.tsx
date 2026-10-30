@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { clippedRecently, startClipMonitor } from '../ui/clipMonitor'
 import { onTick } from '../ui/ticker'
+import { tr } from '../i18n/tr'
 
 /** Hvor lenge varselet blir stående etter siste klipp. */
 const HOLD_MS = 2500
@@ -8,10 +9,18 @@ const HOLD_MS = 2500
 function warningText(): string | null {
   const a = clippedRecently('A', HOLD_MS)
   const b = clippedRecently('B', HOLD_MS)
-  if (a && b) return 'Begge kanalene klipper – skru ned trim på A og B.'
-  if (a) return 'Kanal A klipper – skru ned trim på A.'
-  if (b) return 'Kanal B klipper – skru ned trim på B.'
-  if (clippedRecently('master', HOLD_MS)) return 'Master er for høy – skru ned mastervolumet litt.'
+  if (a && b)
+    return tr(
+      'Begge kanalene klipper – skru ned trim på A og B.',
+      'Both channels are clipping – turn the trim down on A and B.'
+    )
+  if (a) return tr('Kanal A klipper – skru ned trim på A.', 'Channel A is clipping – turn the trim down on A.')
+  if (b) return tr('Kanal B klipper – skru ned trim på B.', 'Channel B is clipping – turn the trim down on B.')
+  if (clippedRecently('master', HOLD_MS))
+    return tr(
+      'Master er for høy – skru ned mastervolumet litt.',
+      'The master is too loud – turn the master volume down a little.'
+    )
   return null
 }
 

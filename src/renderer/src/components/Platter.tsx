@@ -7,6 +7,7 @@ import { deckTourId } from '../help/tourIds'
 import { useAppStore } from '../state/store'
 import { wheelPixels } from './controlMath'
 import { onTick } from '../ui/ticker'
+import { tr } from '../i18n/tr'
 
 /** Ytterkanten (andel av radien) er skyv-ringen. Innenfor er selve platen (scratch). */
 const RING_FROM = 0.84
@@ -114,7 +115,7 @@ export function Platter({ id }: { id: DeckId }): React.JSX.Element {
       className={`platter ${playing ? 'platter--playing' : ''} ${touch ? `platter--${touch}` : ''} ${ready ? '' : 'platter--disabled'}`}
       data-tour-id={deckTourId(id, 'platter')}
       role="group"
-      aria-label={`Plate deck ${id}`}
+      aria-label={tr(`Plate deck ${id}`, `Platter deck ${id}`)}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}

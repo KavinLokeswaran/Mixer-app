@@ -2,6 +2,7 @@ import type { RecordingResult } from '@shared/ipc'
 import { getEngine } from '../audio/AudioEngine'
 import { MixRecorder } from '../recording/mixRecorder'
 import { updateRecording } from '../state/store'
+import { tr } from '../i18n/tr'
 
 let recorder: MixRecorder | null = null
 
@@ -28,7 +29,11 @@ export function applyRecordingResult(result: RecordingResult): void {
       })
       break
     case 'error':
-      updateRecording({ status: 'idle', startedAt: null, error: 'Noe gikk galt med opptaket.' })
+      updateRecording({
+        status: 'idle',
+        startedAt: null,
+        error: tr('Noe gikk galt med opptaket.', 'Something went wrong with the recording.')
+      })
       break
   }
 }

@@ -4,6 +4,7 @@ import { IPC } from '../../shared/ipc'
 import type { LibrarySnapshot, ScanResult, TrackStatus } from '../../shared/library'
 import { appData, librarySnapshot } from '../appData'
 import { scanFolder } from './scan'
+import { tr } from '../lang'
 
 let runningScan: Promise<ScanResult> | null = null
 
@@ -18,8 +19,8 @@ export function isLibraryFile(path: string): boolean {
 
 export async function pickLibraryFolder(win: BrowserWindow | null): Promise<ScanResult | null> {
   const options: Electron.OpenDialogOptions = {
-    title: 'Velg mappa med musikken din',
-    buttonLabel: 'Bruk denne mappa',
+    title: tr('Velg mappa med musikken din', 'Choose the folder with your music'),
+    buttonLabel: tr('Bruk denne mappa', 'Use this folder'),
     properties: ['openDirectory']
   }
   const result = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options)

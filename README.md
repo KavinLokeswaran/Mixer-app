@@ -26,6 +26,11 @@ første gang, og små leksjoner som låser opp nye kontroller etter hvert.
 - Musikkbibliotek med søk og sortering. Alle låtene analyseres én gang i bakgrunnen.
 - Grunnkurs, seks leksjoner, Enkel og Avansert modus, hjelpebobler og små tips.
 - To øvelses-beats som appen lager selv, så du kan øve uten egen musikk.
+- Innstillinger (tannhjulet, eller ⌘ ,): mørkt, lyst eller samme tema som macOS, fire fargepar
+  for deck A og B, norsk eller engelsk, og av/på for beskrivelser og tips.
+- Beskrivelser-knappen øverst slår hjelpeboblene av og på.
+- Styr trim, diskant, mellomtone, bass og filter med tastaturet: tallraden skrur opp og raden
+  under skrur ned (1–5 / A–G for deck A, 6–0 / H–Ø for deck B). Hold Shift for små steg.
 
 ## Slik åpner du appen (installasjonsfila)
 

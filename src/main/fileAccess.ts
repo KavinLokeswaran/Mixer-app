@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { basename, extname, resolve } from 'node:path'
 import { dialog, type BrowserWindow } from 'electron'
 import { AUDIO_EXTENSIONS, type PickedFile, type ReadFileResult } from '../shared/ipc'
+import { tr } from './lang'
 
 /**
  * Grensesnittet får bare lese filer brukeren selv har valgt.
@@ -22,12 +23,12 @@ export function allowFile(path: string): void {
 
 export async function pickAudioFile(win: BrowserWindow | null): Promise<PickedFile | null> {
   const options: Electron.OpenDialogOptions = {
-    title: 'Velg en låt',
-    buttonLabel: 'Åpne',
+    title: tr('Velg en låt', 'Choose a track'),
+    buttonLabel: tr('Åpne', 'Open'),
     properties: ['openFile'],
     filters: [
-      { name: 'Lydfiler', extensions: [...AUDIO_EXTENSIONS] },
-      { name: 'Alle filer', extensions: ['*'] }
+      { name: tr('Lydfiler', 'Audio files'), extensions: [...AUDIO_EXTENSIONS] },
+      { name: tr('Alle filer', 'All files'), extensions: ['*'] }
     ]
   }
   const result = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options)

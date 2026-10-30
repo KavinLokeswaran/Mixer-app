@@ -5,6 +5,7 @@ import { createInitialState, type AppState, type DeckState } from '../state/stor
 import { LESSON_IDS } from './controlGroups'
 import { TourRunner } from './tourRunner'
 import { INTRO, LESSONS, tourById } from './tours'
+import { TOURS_EN } from './tours.en'
 import type { TourSnapshot } from './tourTypes'
 
 const VALID_TARGETS = new Set<string>([
@@ -202,5 +203,20 @@ describe('leksjonene', () => {
       'start-rec': [{ snap: rec('recording') }],
       'stop-rec': [{ snap: rec('idle') }]
     })
+  })
+})
+
+describe('kursene på engelsk', () => {
+  it('har engelsk tekst for hvert steg og hver knapp', () => {
+    for (const tour of [INTRO, ...Object.values(LESSONS)]) {
+      const en = TOURS_EN[tour.id]
+      expect(en, tour.id).toBeDefined()
+      for (const step of tour.steps) {
+        const t = en.steps[step.id]
+        expect(t, `${tour.id}/${step.id}`).toBeDefined()
+        expect(!!t.waiting, `${tour.id}/${step.id} waiting`).toBe(!!step.waiting)
+        expect(t.buttons?.length ?? 0, `${tour.id}/${step.id} buttons`).toBe(step.buttons?.length ?? 0)
+      }
+    }
   })
 })

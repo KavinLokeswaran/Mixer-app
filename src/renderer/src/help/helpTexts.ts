@@ -8,11 +8,14 @@ import type { DeckControl, GlobalControl } from './tourIds'
  * - what:  hva den gjør
  * - when:  når man bruker den
  * I tekstene for decks byttes {deck} ut med A eller B.
+ * Den engelske utgaven ligger i helpTexts.en.ts.
  */
 export interface HelpText {
   title: string
   what: string
   when?: string
+  /** Tastene som styrer kontrollen (fylles inn av helpLookup). */
+  keys?: string
 }
 
 export const DECK_HELP: Record<DeckControl, HelpText> = {
@@ -262,5 +265,15 @@ export const GLOBAL_HELP: Record<GlobalControl, HelpText> = {
     title: 'Kurve på krysslideren',
     what: 'Myk: lyden glir jevnt fra én låt til den andre. Skarp: begge spiller fullt, og den ene kuttes helt ute i kanten.',
     when: 'Myk passer til vanlige overganger. Skarp passer til scratch og raske kutt.'
+  },
+  'help-toggle': {
+    title: 'Beskrivelser',
+    what: 'Slår av og på disse forklaringene som dukker opp når du holder musa over en kontroll.',
+    when: 'Slå dem av når du kan appen godt og ikke trenger hjelp lenger.'
+  },
+  settings: {
+    title: 'Innstillinger',
+    what: 'Velg tema, fargetone og språk, og bestem hvordan hjelp og tastatur skal virke.',
+    when: 'Snarvei: ⌘ ,'
   }
 }

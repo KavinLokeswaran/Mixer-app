@@ -22,7 +22,9 @@ export const IPC = {
   recordingSave: 'recording:save',
   recordingDiscard: 'recording:discard',
   getSettings: 'settings:get',
-  updateSettings: 'settings:update'
+  updateSettings: 'settings:update',
+  /** Fra menyen: åpne innstillingssiden. */
+  openSettings: 'settings:open'
 } as const
 
 export type RecordingResult =
@@ -76,4 +78,6 @@ export interface MikserenApi {
   updateSettings(patch: Partial<Settings>): Promise<Settings>
   /** Lytt på fremdrift under skanning. Returnerer en funksjon som slutter å lytte. */
   onScanProgress(listener: (progress: ScanProgress) => void): () => void
+  /** Lytt på «Innstillinger …» i menyen. Returnerer en funksjon som slutter å lytte. */
+  onOpenSettings(listener: () => void): () => void
 }

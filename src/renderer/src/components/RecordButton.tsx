@@ -5,6 +5,7 @@ import { useAppStore } from '../state/store'
 import { onTick } from '../ui/ticker'
 import { formatTime } from '../util/format'
 import { lastPathPart } from '../util/path'
+import { language, tr } from '../i18n/tr'
 
 /** Opptaksknappen øverst, med tid mens den tar opp og beskjed når fila er lagret. */
 export function RecordButton(): React.JSX.Element | null {
@@ -32,28 +33,33 @@ export function RecordButton(): React.JSX.Element | null {
     <div className="record">
       {recording.status === 'unsaved' ? (
         <div className="record__unsaved" role="alert">
-          <span>Opptaket ({formatTime(recording.unsavedSeconds)}) er ikke lagret.</span>
+          <span>
+            {tr(
+              `Opptaket (${formatTime(recording.unsavedSeconds)}) er ikke lagret.`,
+              `The recording (${formatTime(recording.unsavedSeconds)}) is not saved.`
+            )}
+          </span>
           {recording.error && <span className="record__error">{recording.error}</span>}
           <button
             type="button"
             className="button button--small"
             onClick={() => void dispatch({ type: 'recording/save' })}
           >
-            Lagre …
+            {tr('Lagre …', 'Save …')}
           </button>
           <button
             type="button"
             className="button button--small"
             onClick={() => void dispatch({ type: 'recording/discard' })}
           >
-            Forkast
+            {tr('Forkast', 'Discard')}
           </button>
         </div>
       ) : (
         <>
           {recording.savedPath && !isRecording && (
             <span className="record__saved" title={recording.savedPath}>
-              Lagret: {lastPathPart(recording.savedPath)}
+              {tr('Lagret', 'Saved')}: {lastPathPart(recording.savedPath)}
             </span>
           )}
           {recording.error && <span className="record__error">{recording.error}</span>}
@@ -68,16 +74,22 @@ export function RecordButton(): React.JSX.Element | null {
             <span className="record__dot" aria-hidden />
             {isRecording ? (
               <>
-                Stopp opptak{' '}
+                {tr('Stopp opptak', 'Stop recording')}{' '}
                 <span ref={timeRef} className="record__time">
                   0:00
                 </span>
               </>
             ) : recording.status === 'stopping' ? (
-              'Lagrer …'
+              tr('Lagrer …', 'Saving …')
             ) : (
               <>
-                Ta opp <span className="record__en">(record)</span>
+                {language() === 'en' ? (
+                  'Record'
+                ) : (
+                  <>
+                    Ta opp <span className="record__en">(record)</span>
+                  </>
+                )}
               </>
             )}
           </button>

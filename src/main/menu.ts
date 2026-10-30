@@ -1,57 +1,72 @@
-import { app, Menu, type MenuItemConstructorOptions } from 'electron'
+import { app, BrowserWindow, Menu, type MenuItemConstructorOptions } from 'electron'
 import { APP_NAME } from '../shared/appInfo'
+import { IPC } from '../shared/ipc'
+import { tr } from './lang'
 
-/** Programmenyen, med norske navn. */
+/** Ber vinduet åpne innstillingssiden. */
+function openSettings(): void {
+  BrowserWindow.getFocusedWindow()?.webContents.send(IPC.openSettings)
+}
+
+/** Programmenyen, på språket brukeren har valgt. Bygges på nytt når språket endres. */
 export function buildMenu(): void {
   const isMac = process.platform === 'darwin'
+  const settingsItem: MenuItemConstructorOptions = {
+    label: tr('Innstillinger …', 'Settings …'),
+    accelerator: 'CmdOrCtrl+,',
+    click: openSettings
+  }
   const template: MenuItemConstructorOptions[] = [
     ...(isMac
       ? [
           {
             label: APP_NAME,
             submenu: [
-              { role: 'about', label: `Om ${APP_NAME}` },
+              { role: 'about', label: tr(`Om ${APP_NAME}`, `About ${APP_NAME}`) },
               { type: 'separator' },
-              { role: 'hide', label: `Skjul ${APP_NAME}` },
-              { role: 'hideOthers', label: 'Skjul andre' },
-              { role: 'unhide', label: 'Vis alle' },
+              settingsItem,
               { type: 'separator' },
-              { role: 'quit', label: `Avslutt ${APP_NAME}` }
+              { role: 'hide', label: tr(`Skjul ${APP_NAME}`, `Hide ${APP_NAME}`) },
+              { role: 'hideOthers', label: tr('Skjul andre', 'Hide Others') },
+              { role: 'unhide', label: tr('Vis alle', 'Show All') },
+              { type: 'separator' },
+              { role: 'quit', label: tr(`Avslutt ${APP_NAME}`, `Quit ${APP_NAME}`) }
             ]
           } satisfies MenuItemConstructorOptions
         ]
       : []),
     {
-      label: 'Rediger',
+      label: tr('Rediger', 'Edit'),
       submenu: [
-        { role: 'undo', label: 'Angre' },
-        { role: 'redo', label: 'Gjør om' },
+        { role: 'undo', label: tr('Angre', 'Undo') },
+        { role: 'redo', label: tr('Gjør om', 'Redo') },
         { type: 'separator' },
-        { role: 'cut', label: 'Klipp ut' },
-        { role: 'copy', label: 'Kopier' },
-        { role: 'paste', label: 'Lim inn' },
-        { role: 'selectAll', label: 'Merk alt' }
+        { role: 'cut', label: tr('Klipp ut', 'Cut') },
+        { role: 'copy', label: tr('Kopier', 'Copy') },
+        { role: 'paste', label: tr('Lim inn', 'Paste') },
+        { role: 'selectAll', label: tr('Merk alt', 'Select All') },
+        ...(isMac ? [] : ([{ type: 'separator' }, settingsItem] satisfies MenuItemConstructorOptions[]))
       ]
     },
     {
-      label: 'Vis',
+      label: tr('Vis', 'View'),
       submenu: [
-        { role: 'togglefullscreen', label: 'Fullskjerm' },
+        { role: 'togglefullscreen', label: tr('Fullskjerm', 'Full Screen') },
         ...(app.isPackaged
           ? []
           : ([
               { type: 'separator' },
-              { role: 'reload', label: 'Last inn på nytt' },
-              { role: 'toggleDevTools', label: 'Utviklerverktøy' }
+              { role: 'reload', label: tr('Last inn på nytt', 'Reload') },
+              { role: 'toggleDevTools', label: tr('Utviklerverktøy', 'Developer Tools') }
             ] satisfies MenuItemConstructorOptions[]))
       ]
     },
     {
-      label: 'Vindu',
+      label: tr('Vindu', 'Window'),
       submenu: [
-        { role: 'minimize', label: 'Minimer' },
+        { role: 'minimize', label: tr('Minimer', 'Minimize') },
         { role: 'zoom', label: 'Zoom' },
-        ...(isMac ? [] : ([{ role: 'quit', label: 'Avslutt' }] satisfies MenuItemConstructorOptions[]))
+        ...(isMac ? [] : ([{ role: 'quit', label: tr('Avslutt', 'Quit') }] satisfies MenuItemConstructorOptions[]))
       ]
     }
   ]

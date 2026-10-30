@@ -8,6 +8,7 @@ import { onTick } from '../ui/ticker'
 import { cssColor, drawBeatLines, drawWaveform } from '../waveform/draw'
 import { drawMarkers } from '../waveform/markers'
 import { useCanvas } from '../waveform/useCanvas'
+import { tr } from '../i18n/tr'
 
 /** Hvor mange sekunder (ekte tid) som vises over hele bredden. */
 const VISIBLE_SECONDS = 6
@@ -59,9 +60,9 @@ export function ZoomedWaveform({ id }: { id: DeckId }): React.JSX.Element {
 
   const message =
     status === 'empty'
-      ? `Deck ${id}: ingen låt`
+      ? tr(`Deck ${id}: ingen låt`, `Deck ${id}: no track`)
       : status === 'loading' || analysis === 'running'
-        ? 'Analyserer …'
+        ? tr('Analyserer …', 'Analysing …')
         : null
 
   return (
