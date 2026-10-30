@@ -5,6 +5,7 @@ import { useAppStore, updateMixer } from '../state/store'
 import { onTick } from '../ui/ticker'
 import { otherDeck } from './syncLogic'
 import type { Action } from './types'
+import { tr } from '../i18n/tr'
 
 /**
  * Auto-overgang: flytter krysslideren mykt over til den andre decken på et antall slag,
@@ -62,7 +63,13 @@ export async function startAutoMix(dispatch: Dispatch): Promise<{ deck: DeckId; 
   const to: DeckId = mixer.crossfader <= 0.5 ? 'B' : 'A'
   const from = otherDeck(to)
   if (decks[to].status !== 'ready') {
-    return { deck: to, problem: `Last inn en låt på deck ${to} først, så kan appen mikse over til den.` }
+    return {
+      deck: to,
+      problem: tr(
+        `Last inn en låt på deck ${to} først, så kan appen mikse over til den.`,
+        `Load a track on deck ${to} first, so the app can mix over to it.`
+      )
+    }
   }
   if (!engine.decks[to].isPlaying) {
     const fromPlaying = engine.decks[from].isPlaying

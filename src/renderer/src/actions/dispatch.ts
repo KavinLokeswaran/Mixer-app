@@ -12,10 +12,11 @@ import { findTrack, markTrackUnplayable, setTrackAnalysis, updateLibrary, useLib
 import { useAppStore, updateDeck, updateMixer, updateRecording, type AppState } from '../state/store'
 import { cuePosition, jumpTo, persistCues, quantize, syncLoopState } from './cueLogic'
 import { handleLearnAction } from '../learn/learnController'
-import { PRACTICE_BEATS } from '../practice/arrangement'
+import { PRACTICE_BEATS, practiceTitle } from '../practice/arrangement'
 import { getPracticeBeat } from '../practice/practiceBeats'
 import { handleTipAction } from '../tips/tipController'
 import { patchSettings } from '../state/settingsStore'
+import { useUiStore } from '../state/uiStore'
 import { applyRecordingResult, getRecorder } from './recordingLogic'
 import { cancelAutoMix, startAutoMix } from './autoMixLogic'
 import { jogEnd, jogMove, jogStart, setNudgeButton } from './jogLogic'
@@ -32,6 +33,7 @@ import {
   syncTempo
 } from './syncLogic'
 import type { Action } from './types'
+import { tr } from '../i18n/tr'
 
 const clampUnit = (x: number): number => Math.max(-1, Math.min(1, x))
 
@@ -158,7 +160,13 @@ export async function dispatch(action: Action): Promise<void> {
       const deck = engine.decks[id]
       if (!deck.isLoaded) return
       if (!state.grid) {
-        showNotice(id, 'Loops trenger at appen vet hvor slagene er, og det fant den ikke i denne låten.')
+        showNotice(
+          id,
+          tr(
+            'Loops trenger at appen vet hvor slagene er, og det fant den ikke i denne låten.',
+            'Loops need the app to know where the beats are, and it could not find them in this track.'
+          )
+        )
         return
       }
       const current = deck.loopRegion
@@ -202,7 +210,7 @@ export async function dispatch(action: Action): Promise<void> {
       updateRecording(
         ok
           ? { status: 'recording', startedAt: performance.now() }
-          : { status: 'idle', error: 'Klarte ikke å starte opptaket.' }
+          : { status: 'idle', error: tr('Klarte ikke å starte opptaket.', 'Could not start the recording.') }
       )
       if (!ok) return
       break
@@ -339,6 +347,13 @@ export async function dispatch(action: Action): Promise<void> {
       patchSettings({ shownTips: [] })
       handleTipAction(action)
       break
+    case 'settings/update':
+      patchSettings(action.patch)
+      break
+    case 'ui/settings':
+      useUiStore.setState({ settingsOpen: action.open })
+      if (action.open) handleLearnAction({ type: 'learn/menu', open: false })
+      break
     case 'tips/dismiss':
       handleTipAction(action)
       break
@@ -466,8 +481,8 @@ async function loadPractice(id: DeckId, beat: 1 | 2, play: boolean): Promise<voi
   const isCurrent = beginLoad(id, {
     trackId: `practice-${beat}`,
     path: null,
-    title: spec.title,
-    artist: 'Mikseren (øvelse)'
+    title: practiceTitle(beat),
+    artist: tr('Mikseren (øvelse)', 'Mikseren (practice)')
   })
   try {
     const buffer = await getPracticeBeat(beat)
@@ -485,7 +500,11 @@ async function loadPractice(id: DeckId, beat: 1 | 2, play: boolean): Promise<voi
     void dispatch({ type: 'deck/analysed', deck: id })
   } catch (err) {
     console.error('Øvelses-beaten feilet', err)
-    if (isCurrent()) updateDeck(id, { status: 'error', error: 'Klarte ikke å lage øvelses-beaten. Prøv igjen.' })
+    if (isCurrent())
+      updateDeck(id, {
+        status: 'error',
+        error: tr('Klarte ikke å lage øvelses-beaten. Prøv igjen.', 'Could not create the practice beat. Try again.')
+      })
   }
 }
 

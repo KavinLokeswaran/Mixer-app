@@ -13,6 +13,7 @@ import { Fader } from './Fader'
 import { Knob } from './Knob'
 import { LevelMeterView } from './LevelMeterView'
 import { LimiterLamp } from './LimiterLamp'
+import { tr } from '../i18n/tr'
 
 const dbText = (db: number): string => `${db > 0 ? '+' : ''}${Math.round(db)} dB`
 
@@ -21,7 +22,7 @@ export function Mixer(): React.JSX.Element {
   const master = useAppStore((s) => s.mixer.masterVolume)
 
   return (
-    <section className="mixer" aria-label="Mikser">
+    <section className="mixer" aria-label={tr('Mikser', 'Mixer')}>
       <div className="mixer__channels">
         <Channel id="A" />
         <div className="mixer__master">
@@ -30,13 +31,13 @@ export function Mixer(): React.JSX.Element {
             <Fader
               orientation="vertical"
               value={master}
-              label="Mastervolum"
+              label={tr('Mastervolum', 'Master volume')}
               tourId="master-volume"
               resetValue={0.8}
               onChange={(value) => void dispatch({ type: 'mixer/setMasterVolume', value })}
               className="fader--master"
             />
-            <LevelMeterView target="master" tourId="master-meter" label="Masternivå" />
+            <LevelMeterView target="master" tourId="master-meter" label={tr('Masternivå', 'Master level')} />
           </div>
           <LimiterLamp />
         </div>
@@ -50,7 +51,7 @@ export function Mixer(): React.JSX.Element {
         <Fader
           orientation="horizontal"
           value={crossfader}
-          label="Krysslider"
+          label={tr('Krysslider', 'Crossfader')}
           tourId="crossfader"
           resetValue={0.5}
           onChange={(value) => void dispatch({ type: 'mixer/setCrossfader', value })}
@@ -59,7 +60,7 @@ export function Mixer(): React.JSX.Element {
         <span className="mixer__xfader-end mixer__xfader-end--b">B</span>
       </div>
       <div className="mixer__xfader-row">
-        <span className="mixer__xfader-label">Krysslider (crossfader)</span>
+        <span className="mixer__xfader-label">{tr('Krysslider (crossfader)', 'Crossfader')}</span>
         <CurveSwitch />
       </div>
       <AutoMix />
@@ -84,9 +85,14 @@ function CurveSwitch(): React.JSX.Element | null {
     </button>
   )
   return (
-    <div className="segmented" role="radiogroup" aria-label="Kurve på krysslideren" data-tour-id="crossfader-curve">
-      {option('smooth', 'Myk')}
-      {option('sharp', 'Skarp')}
+    <div
+      className="segmented"
+      role="radiogroup"
+      aria-label={tr('Kurve på krysslideren', 'Crossfader curve')}
+      data-tour-id="crossfader-curve"
+    >
+      {option('smooth', tr('Myk', 'Smooth'))}
+      {option('sharp', tr('Skarp', 'Sharp'))}
     </div>
   )
 }
@@ -117,10 +123,14 @@ function AutoMix(): React.JSX.Element {
       >
         <span className="automix__fill" aria-hidden />
         <span className="automix__text">
-          {running ? 'Avbryt overgang' : shown === 'B' ? 'Auto-overgang til B →' : '← Auto-overgang til A'}
+          {running
+            ? tr('Avbryt overgang', 'Cancel transition')
+            : shown === 'B'
+              ? tr('Auto-overgang til B →', 'Auto transition to B →')
+              : tr('← Auto-overgang til A', '← Auto transition to A')}
         </span>
       </button>
-      <div className="segmented" role="radiogroup" aria-label="Lengde på overgangen">
+      <div className="segmented" role="radiogroup" aria-label={tr('Lengde på overgangen', 'Length of the transition')}>
         {AUTO_MIX_BEATS.map((b) => (
           <button
             key={b}
@@ -134,16 +144,16 @@ function AutoMix(): React.JSX.Element {
             {b}
           </button>
         ))}
-        <span className="segmented__unit">slag</span>
+        <span className="segmented__unit">{tr('slag', 'beats')}</span>
       </div>
     </div>
   )
 }
 
-const EQ_KNOBS: { band: EqBand; label: string; name: string; tour: 'eq-high' | 'eq-mid' | 'eq-low' }[] = [
-  { band: 'high', label: 'Diskant', name: 'Diskant', tour: 'eq-high' },
-  { band: 'mid', label: 'Mellom', name: 'Mellomtone', tour: 'eq-mid' },
-  { band: 'low', label: 'Bass', name: 'Bass', tour: 'eq-low' }
+const eqKnobs = (): { band: EqBand; label: string; name: string; tour: 'eq-high' | 'eq-mid' | 'eq-low' }[] => [
+  { band: 'high', label: tr('Diskant', 'High'), name: tr('Diskant', 'High'), tour: 'eq-high' },
+  { band: 'mid', label: tr('Mellom', 'Mid'), name: tr('Mellomtone', 'Mid'), tour: 'eq-mid' },
+  { band: 'low', label: tr('Bass', 'Low'), name: tr('Bass', 'Low'), tour: 'eq-low' }
 ]
 
 function ToneKnobs({ id }: { id: DeckId }): React.JSX.Element | null {
@@ -169,7 +179,7 @@ function ToneKnobs({ id }: { id: DeckId }): React.JSX.Element | null {
         />
       )}
       {showEq &&
-        EQ_KNOBS.map((k) => (
+        eqKnobs().map((k) => (
           <Knob
             key={k.band}
             label={k.label}
@@ -188,7 +198,9 @@ function ToneKnobs({ id }: { id: DeckId }): React.JSX.Element | null {
           tourId={deckTourId(id, 'filter')}
           value={filter}
           accent={accent}
-          valueText={filter < -0.03 ? 'Lavpass' : filter > 0.03 ? 'Høypass' : 'Av'}
+          valueText={
+            filter < -0.03 ? tr('Lavpass', 'Low-pass') : filter > 0.03 ? tr('Høypass', 'High-pass') : tr('Av', 'Off')
+          }
           onChange={(value) => void dispatch({ type: 'deck/setFilter', deck: id, value })}
         />
       )}
@@ -200,26 +212,38 @@ function Channel({ id }: { id: DeckId }): React.JSX.Element {
   const volume = useAppStore((s) => s.decks[id].volume)
   const strip = (
     <div className="mixer__strip">
-      {id === 'B' && <LevelMeterView target={id} tourId={deckTourId(id, 'meter')} label={`Nivå deck ${id}`} />}
+      {id === 'B' && (
+        <LevelMeterView
+          target={id}
+          tourId={deckTourId(id, 'meter')}
+          label={tr(`Nivå deck ${id}`, `Level deck ${id}`)}
+        />
+      )}
       <Fader
         orientation="vertical"
         value={volume}
-        label={`Volum deck ${id}`}
+        label={tr(`Volum deck ${id}`, `Volume deck ${id}`)}
         tourId={deckTourId(id, 'volume')}
         onChange={(value) => void dispatch({ type: 'deck/setVolume', deck: id, value })}
         className={`fader--${id.toLowerCase()}`}
       />
-      {id === 'A' && <LevelMeterView target={id} tourId={deckTourId(id, 'meter')} label={`Nivå deck ${id}`} />}
+      {id === 'A' && (
+        <LevelMeterView
+          target={id}
+          tourId={deckTourId(id, 'meter')}
+          label={tr(`Nivå deck ${id}`, `Level deck ${id}`)}
+        />
+      )}
     </div>
   )
   return (
     <div className={`mixer__channel mixer__channel--${id.toLowerCase()}`}>
-      <div className="mixer__label">Kanal {id}</div>
+      <div className="mixer__label">{tr(`Kanal ${id}`, `Channel ${id}`)}</div>
       <div className="mixer__channel-body">
         {id === 'A' && <ToneKnobs id={id} />}
         <div className="mixer__fader-col">
           {strip}
-          <span className="mixer__sublabel">Volum</span>
+          <span className="mixer__sublabel">{tr('Volum', 'Volume')}</span>
         </div>
         {id === 'B' && <ToneKnobs id={id} />}
       </div>

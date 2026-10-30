@@ -25,6 +25,11 @@ const api: MikserenApi = {
     const handler = (_event: IpcRendererEvent, progress: ScanProgress): void => listener(progress)
     ipcRenderer.on(IPC.scanProgress, handler)
     return () => ipcRenderer.removeListener(IPC.scanProgress, handler)
+  },
+  onOpenSettings: (listener) => {
+    const handler = (): void => listener()
+    ipcRenderer.on(IPC.openSettings, handler)
+    return () => ipcRenderer.removeListener(IPC.openSettings, handler)
   }
 }
 

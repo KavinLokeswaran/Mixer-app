@@ -1,6 +1,8 @@
 import type { DeckId } from '../audio/types'
 import type { AppState } from '../state/store'
 import type { LessonId } from './controlGroups'
+import { language } from '../i18n/tr'
+import { TOURS_EN } from './tours.en'
 import type { Tour, TourSnapshot, TourStep } from './tourTypes'
 
 /**
@@ -8,6 +10,7 @@ import type { Tour, TourSnapshot, TourStep } from './tourTypes'
  *
  * Alt er data: hvert steg har tekst, hvilke kontroller som lyses opp, og en sjekk
  * som sier når brukeren har gjort det steget ber om. Legg til eller endre steg her.
+ * Den engelske teksten til hvert steg ligger i tours.en.ts.
  */
 
 const deck = (s: TourSnapshot, id: DeckId): AppState['decks'][DeckId] => s.app.decks[id]
@@ -399,7 +402,36 @@ export const LESSONS: Record<LessonId, Tour> = {
   }
 }
 
+const englishCache = new Map<string, Tour>()
+
+/** Samme kurs med engelske tekster. Mangler en tekst, brukes den norske. */
+function toEnglish(tour: Tour): Tour {
+  const cached = englishCache.get(tour.id)
+  if (cached) return cached
+  const text = TOURS_EN[tour.id]
+  const english: Tour = {
+    ...tour,
+    title: text?.title ?? tour.title,
+    description: text?.description ?? tour.description,
+    steps: tour.steps.map((step) => {
+      const t = text?.steps[step.id]
+      if (!t) return step
+      return {
+        ...step,
+        title: t.title,
+        text: t.text,
+        waiting: t.waiting ?? step.waiting,
+        buttons: step.buttons?.map((b, i) => ({ ...b, label: t.buttons?.[i] ?? b.label }))
+      }
+    })
+  }
+  englishCache.set(tour.id, english)
+  return english
+}
+
+/** Grunnkurset eller en leksjon, på språket som er valgt. */
 export function tourById(id: string): Tour | null {
-  if (id === 'intro') return INTRO
-  return (LESSONS as Record<string, Tour>)[id] ?? null
+  const tour = id === 'intro' ? INTRO : ((LESSONS as Record<string, Tour>)[id] ?? null)
+  if (!tour) return null
+  return language() === 'en' ? toEnglish(tour) : tour
 }

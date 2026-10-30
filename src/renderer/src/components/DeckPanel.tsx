@@ -12,6 +12,7 @@ import { DeckPads } from './DeckPads'
 import { OverviewWaveform } from './OverviewWaveform'
 import { Platter } from './Platter'
 import { TempoControl } from './TempoControl'
+import { language, tr } from '../i18n/tr'
 
 export function DeckPanel({ id }: { id: DeckId }): React.JSX.Element {
   const deck = useAppStore((s) => s.decks[id])
@@ -45,18 +46,24 @@ export function DeckPanel({ id }: { id: DeckId }): React.JSX.Element {
       }}
       onDrop={onDrop}
     >
-      {dropping && <div className="deck__drop-hint">Slipp for å laste inn på deck {id}</div>}
+      {dropping && (
+        <div className="deck__drop-hint">{tr(`Slipp for å laste inn på deck ${id}`, `Drop to load on deck ${id}`)}</div>
+      )}
       <header className="deck__header">
         <div className="deck__badge" data-help-id={t('panel')}>
           {id}
         </div>
         <div className="deck__track" data-tour-id={t('track')}>
-          {deck.status === 'empty' && <div className="deck__title deck__title--empty">Ingen låt lastet inn</div>}
+          {deck.status === 'empty' && (
+            <div className="deck__title deck__title--empty">{tr('Ingen låt lastet inn', 'No track loaded')}</div>
+          )}
           {deck.status !== 'empty' && (
             <>
               <div className="deck__title">{deck.title}</div>
               <div className="deck__artist">
-                {deck.status === 'loading' ? 'Laster inn …' : (deck.artist ?? 'Ukjent artist')}
+                {deck.status === 'loading'
+                  ? tr('Laster inn …', 'Loading …')
+                  : (deck.artist ?? tr('Ukjent artist', 'Unknown artist'))}
               </div>
             </>
           )}
@@ -68,13 +75,15 @@ export function DeckPanel({ id }: { id: DeckId }): React.JSX.Element {
           disabled={deck.status === 'loading'}
           onClick={() => void dispatch({ type: 'deck/openFile', deck: id })}
         >
-          Åpne fil …
+          {tr('Åpne fil …', 'Open file …')}
         </button>
         <div className="deck__bpm" data-tour-id={t('bpm')}>
           <span className="deck__bpm-value">
             {deck.bpm ? formatBpm(effectiveBpm(deck.bpm, deck.pitch)) : deck.analysis === 'running' ? '…' : '—'}
           </span>
-          <span className="deck__bpm-label">{deck.analysis === 'running' && !deck.bpm ? 'FINNER TEMPO' : 'BPM'}</span>
+          <span className="deck__bpm-label">
+            {deck.analysis === 'running' && !deck.bpm ? tr('FINNER TEMPO', 'FINDING TEMPO') : 'BPM'}
+          </span>
         </div>
       </header>
 
@@ -114,7 +123,7 @@ export function DeckPanel({ id }: { id: DeckId }): React.JSX.Element {
               <span className="deck__play-icon" aria-hidden>
                 {deck.isPlaying ? '❚❚' : '▶'}
               </span>
-              <span>{deck.isPlaying ? 'Pause' : 'Spill av'}</span>
+              <span>{deck.isPlaying ? 'Pause' : tr('Spill av', 'Play')}</span>
             </button>
             <button
               type="button"
@@ -124,7 +133,13 @@ export function DeckPanel({ id }: { id: DeckId }): React.JSX.Element {
               aria-pressed={deck.synced}
               onClick={() => void dispatch({ type: 'deck/toggleSync', deck: id })}
             >
-              Synk <span className="deck__sync-en">(sync)</span>
+              {language() === 'en' ? (
+                'Sync'
+              ) : (
+                <>
+                  Synk <span className="deck__sync-en">(sync)</span>
+                </>
+              )}
             </button>
             <NudgeButtons id={id} enabled={ready && deck.isPlaying} />
           </div>
@@ -170,10 +185,15 @@ function NudgeButtons({ id, enabled }: { id: DeckId; enabled: boolean }): React.
     </button>
   )
   return (
-    <div className="nudge" data-tour-id={deckTourId(id, 'nudge')} role="group" aria-label={`Skyv deck ${id}`}>
-      {button(-1, '‹‹', 'Skyv saktere')}
-      <span className="nudge__label">Skyv</span>
-      {button(1, '››', 'Skyv raskere')}
+    <div
+      className="nudge"
+      data-tour-id={deckTourId(id, 'nudge')}
+      role="group"
+      aria-label={tr(`Skyv deck ${id}`, `Nudge deck ${id}`)}
+    >
+      {button(-1, '‹‹', tr('Skyv saktere', 'Nudge slower'))}
+      <span className="nudge__label">{tr('Skyv', 'Nudge')}</span>
+      {button(1, '››', tr('Skyv raskere', 'Nudge faster'))}
     </div>
   )
 }

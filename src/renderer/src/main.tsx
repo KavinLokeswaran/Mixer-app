@@ -4,10 +4,12 @@ import { APP_NAME } from '@shared/appInfo'
 import { dispatch, initEngine, initLibrary, onAction } from './actions/dispatch'
 import { initLearning } from './learn/learnController'
 import { initTips } from './tips/tipController'
+import { initTheme } from './ui/theme'
 import { App } from './App'
 import './styles.css'
 
 document.title = APP_NAME
+initTheme()
 initEngine()
 void initLibrary()
 initLearning(dispatch, (listener) => onAction((action) => listener(action)))

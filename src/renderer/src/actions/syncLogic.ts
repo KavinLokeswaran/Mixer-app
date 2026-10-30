@@ -2,6 +2,7 @@ import { getEngine } from '../audio/AudioEngine'
 import { alignedPosition, beatsAt, effectiveBpm, matchPitch, TEMPO_RANGE } from '../audio/sync'
 import type { DeckId } from '../audio/types'
 import { useAppStore, updateDeck } from '../state/store'
+import { tr } from '../i18n/tr'
 
 export function otherDeck(id: DeckId): DeckId {
   return id === 'A' ? 'B' : 'A'
@@ -30,9 +31,15 @@ export function syncProblem(id: DeckId): string | null {
   const decks = useAppStore.getState().decks
   const own = decks[id]
   const other = decks[otherDeck(id)]
-  if (own.status !== 'ready' || other.status !== 'ready') return 'Synk trenger en låt på begge decks.'
-  if (own.analysis === 'running' || other.analysis === 'running') return 'Vent litt – appen finner tempoet.'
-  if (!own.grid || !other.grid) return 'Appen fant ikke noe tydelig tempo i en av låtene, så de kan ikke synkes.'
+  if (own.status !== 'ready' || other.status !== 'ready')
+    return tr('Synk trenger en låt på begge decks.', 'Sync needs a track on both decks.')
+  if (own.analysis === 'running' || other.analysis === 'running')
+    return tr('Vent litt – appen finner tempoet.', 'Wait a moment – the app is finding the tempo.')
+  if (!own.grid || !other.grid)
+    return tr(
+      'Appen fant ikke noe tydelig tempo i en av låtene, så de kan ikke synkes.',
+      'The app could not find a clear tempo in one of the tracks, so they cannot be synced.'
+    )
   return null
 }
 
@@ -44,7 +51,13 @@ export function syncTempo(id: DeckId): boolean {
   if (!own.grid || !other.grid) return false
   const match = matchPitch(own.grid.bpm, effectiveBpm(other.grid.bpm, other.pitch))
   if (!match) {
-    showNotice(id, 'Tempoene er for ulike (mer enn 8 %) til å synkes. Prøv en låt med tempo nærmere den andre.')
+    showNotice(
+      id,
+      tr(
+        'Tempoene er for ulike (mer enn 8 %) til å synkes. Prøv en låt med tempo nærmere den andre.',
+        'The tempos are too different (more than 8 %) to sync. Try a track with a tempo closer to the other.'
+      )
+    )
     return false
   }
   applyPitch(id, match.pitch)

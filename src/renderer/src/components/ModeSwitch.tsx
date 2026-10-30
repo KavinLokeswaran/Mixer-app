@@ -1,18 +1,21 @@
 import { dispatch } from '../actions/dispatch'
 import { useSettingsStore } from '../state/settingsStore'
+import { tr } from '../i18n/tr'
 
 /** Bryter mellom Enkel modus og Avansert modus. */
 export function ModeSwitch(): React.JSX.Element {
   const advanced = useSettingsStore((s) => s.advancedMode)
   return (
     <label className="mode" data-tour-id="mode-switch">
-      <span className="mode__label">{advanced ? 'Avansert modus' : 'Enkel modus'}</span>
+      <span className="mode__label">
+        {advanced ? tr('Avansert modus', 'Advanced mode') : tr('Enkel modus', 'Simple mode')}
+      </span>
       <input
         type="checkbox"
         role="switch"
         className="mode__input"
         checked={advanced}
-        aria-label="Avansert modus"
+        aria-label={tr('Avansert modus', 'Advanced mode')}
         onChange={(e) => void dispatch({ type: 'settings/setAdvanced', value: e.currentTarget.checked })}
       />
       <span className="mode__track" aria-hidden>

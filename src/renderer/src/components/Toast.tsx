@@ -1,5 +1,6 @@
 import { dispatch } from '../actions/dispatch'
 import { useLearnStore } from '../state/learnStore'
+import { tr } from '../i18n/tr'
 
 /** Liten beskjed nederst, f.eks. «Ny kontroll låst opp!». Klikk bort. */
 export function Toast(): React.JSX.Element | null {
@@ -14,7 +15,7 @@ export function Toast(): React.JSX.Element | null {
       <button
         type="button"
         className="toast__close"
-        aria-label="Lukk"
+        aria-label={tr('Lukk', 'Close')}
         onClick={() => void dispatch({ type: 'learn/dismissToast' })}
       >
         ×

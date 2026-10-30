@@ -9,11 +9,12 @@ import { useAppStore, type DeckPanelKind } from '../state/store'
 import { formatTime } from '../util/format'
 import { HOT_CUE_COLORS } from '../waveform/markers'
 import { Knob } from './Knob'
+import { tr } from '../i18n/tr'
 
-const TABS: { panel: DeckPanelKind; label: string; group: ControlGroup }[] = [
-  { panel: 'hotcues', label: 'Hot cues', group: 'hotcues' },
-  { panel: 'loops', label: 'Loops', group: 'loops' },
-  { panel: 'fx', label: 'Effekter', group: 'fx' }
+const TABS: { panel: DeckPanelKind; label: () => string; group: ControlGroup }[] = [
+  { panel: 'hotcues', label: () => 'Hot cues', group: 'hotcues' },
+  { panel: 'loops', label: () => 'Loops', group: 'loops' },
+  { panel: 'fx', label: () => tr('Effekter', 'Effects'), group: 'fx' }
 ]
 
 const FX_NAMES: Record<FxKind, string> = { echo: 'Echo', reverb: 'Reverb', flanger: 'Flanger' }
@@ -44,7 +45,7 @@ export function DeckPads({ id }: { id: DeckId }): React.JSX.Element | null {
             className={`pads__tab ${panel === tab.panel ? 'pads__tab--on' : ''}`}
             onClick={() => void dispatch({ type: 'deck/showPanel', deck: id, panel: tab.panel })}
           >
-            {tab.label}
+            {tab.label()}
           </button>
         ))}
       </div>
@@ -68,7 +69,11 @@ function HotCues({ id, ready }: { id: DeckId; ready: boolean }): React.JSX.Eleme
           disabled={!ready}
           className={`hotcue ${time === null ? 'hotcue--empty' : ''}`}
           style={time === null ? undefined : ({ '--pad': HOT_CUE_COLORS[index] } as React.CSSProperties)}
-          aria-label={time === null ? `Lagre hot cue ${index + 1}` : `Hopp til hot cue ${index + 1}`}
+          aria-label={
+            time === null
+              ? tr(`Lagre hot cue ${index + 1}`, `Save hot cue ${index + 1}`)
+              : tr(`Hopp til hot cue ${index + 1}`, `Jump to hot cue ${index + 1}`)
+          }
           onClick={(e) =>
             void dispatch(
               e.shiftKey && time !== null
@@ -82,7 +87,7 @@ function HotCues({ id, ready }: { id: DeckId; ready: boolean }): React.JSX.Eleme
           }}
         >
           <span className="hotcue__num">{index + 1}</span>
-          <span className="hotcue__time">{time === null ? 'Tom' : formatTime(time)}</span>
+          <span className="hotcue__time">{time === null ? tr('Tom', 'Empty') : formatTime(time)}</span>
         </button>
       ))}
     </div>
@@ -101,7 +106,7 @@ function Loops({ id, ready }: { id: DeckId; ready: boolean }): React.JSX.Element
             disabled={!ready}
             className={`loop ${loop?.beats === beats ? 'loop--on' : ''}`}
             aria-pressed={loop?.beats === beats}
-            aria-label={`Loop ${loopLabel(beats)} slag`}
+            aria-label={tr(`Loop ${loopLabel(beats)} slag`, `Loop ${loopLabel(beats)} beats`)}
             onClick={() => void dispatch({ type: 'deck/loop', deck: id, beats })}
           >
             {loopLabel(beats)}
@@ -115,7 +120,7 @@ function Loops({ id, ready }: { id: DeckId; ready: boolean }): React.JSX.Element
         data-tour-id={deckTourId(id, 'loop-exit')}
         onClick={() => void dispatch({ type: 'deck/exitLoop', deck: id })}
       >
-        Avslutt loop
+        {tr('Avslutt loop', 'Exit loop')}
       </button>
     </div>
   )
@@ -137,8 +142,8 @@ function Effects({ id }: { id: DeckId }): React.JSX.Element {
             {FX_NAMES[kind]}
           </button>
           <Knob
-            label="Mengde"
-            ariaLabel={`${FX_NAMES[kind]} mengde, deck ${id}`}
+            label={tr('Mengde', 'Amount')}
+            ariaLabel={tr(`${FX_NAMES[kind]} mengde, deck ${id}`, `${FX_NAMES[kind]} amount, deck ${id}`)}
             tourId={`${deckTourId(id, FX_TOUR[kind])}-amount`}
             min={0}
             max={1}

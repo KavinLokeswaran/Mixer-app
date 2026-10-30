@@ -1,3 +1,5 @@
+import { tr } from '../i18n/tr'
+
 /**
  * Oppskriften på øvelses-beatene: tempo, toneart og hvilke deler som spiller når.
  * Ren data og logikk, så den kan testes uten lyd.
@@ -23,6 +25,11 @@ const Bb1 = 58.27
 export const PRACTICE_BEATS: Record<1 | 2, PracticeBeatSpec> = {
   1: { id: 1, title: 'Øvelses-beat 1', bpm: 120, roots: [A1, F1, C2, G1], hat: 'open' },
   2: { id: 2, title: 'Øvelses-beat 2', bpm: 124, roots: [D2, Bb1, F1 * 2, C2], hat: 'ride' }
+}
+
+/** Navnet på øvelses-beaten, på språket som er valgt. */
+export function practiceTitle(beat: 1 | 2): string {
+  return tr(PRACTICE_BEATS[beat].title, `Practice beat ${beat}`)
 }
 
 export type Section = 'intro' | 'main' | 'breakdown' | 'outro'

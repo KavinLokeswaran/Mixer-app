@@ -7,14 +7,15 @@ import { trackBpm, type SortKey, type SortOrder } from '../library/filterSort'
 import { useLibraryStore } from '../state/libraryStore'
 import { useAppStore } from '../state/store'
 import { formatTime } from '../util/format'
+import { tr } from '../i18n/tr'
 
 const ROW_HEIGHT = 40
 const OVERSCAN = 8
 
-const COLUMNS: { key: SortKey; label: string; className: string }[] = [
-  { key: 'title', label: 'Tittel', className: 'col-title' },
+const columns = (): { key: SortKey; label: string; className: string }[] => [
+  { key: 'title', label: tr('Tittel', 'Title'), className: 'col-title' },
   { key: 'artist', label: 'Artist', className: 'col-artist' },
-  { key: 'duration', label: 'Lengde', className: 'col-duration' },
+  { key: 'duration', label: tr('Lengde', 'Length'), className: 'col-duration' },
   { key: 'bpm', label: 'BPM', className: 'col-bpm' }
 ]
 
@@ -47,7 +48,7 @@ export function TrackList({ tracks, sort, emptyText }: Props): React.JSX.Element
   return (
     <div className="tracks" data-tour-id="library-list" data-no-help>
       <div className="tracks__row tracks__head" role="row" data-tour-id="library-sort">
-        {COLUMNS.map((col) => (
+        {columns().map((col) => (
           <button
             key={col.key}
             type="button"
@@ -59,14 +60,14 @@ export function TrackList({ tracks, sort, emptyText }: Props): React.JSX.Element
             {sort.key === col.key && <span aria-hidden>{sort.direction === 'asc' ? ' ▲' : ' ▼'}</span>}
           </button>
         ))}
-        <span className="col-load">Last inn</span>
+        <span className="col-load">{tr('Last inn', 'Load')}</span>
       </div>
       <div
         ref={scrollRef}
         className="tracks__scroll"
         onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
         role="rowgroup"
-        aria-label="Låter"
+        aria-label={tr('Låter', 'Tracks')}
       >
         {tracks.length === 0 ? (
           <div className="tracks__empty">{emptyText}</div>
@@ -110,7 +111,11 @@ function TrackRow({ track, analysis, top, loadedOn, isFirst }: RowProps): React.
     >
       <span className="col-title">
         {loadedOn.map((d) => (
-          <span key={d} className={`tracks__on tracks__on--${d.toLowerCase()}`} aria-label={`Ligger på deck ${d}`}>
+          <span
+            key={d}
+            className={`tracks__on tracks__on--${d.toLowerCase()}`}
+            aria-label={tr(`Ligger på deck ${d}`, `On deck ${d}`)}
+          >
             {d}
           </span>
         ))}
@@ -125,7 +130,7 @@ function TrackRow({ track, analysis, top, loadedOn, isFirst }: RowProps): React.
             key={d}
             type="button"
             className={`tracks__load tracks__load--${d.toLowerCase()}`}
-            aria-label={`Last inn «${track.title}» på deck ${d}`}
+            aria-label={tr(`Last inn «${track.title}» på deck ${d}`, `Load "${track.title}" on deck ${d}`)}
             data-help-id={`library-load-${d.toLowerCase()}`}
             data-tour-id={isFirst ? `library-load-${d.toLowerCase()}` : undefined}
             onClick={() => void dispatch({ type: 'deck/loadTrack', deck: d, trackId: track.id })}
