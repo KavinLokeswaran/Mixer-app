@@ -47,6 +47,16 @@ export class Deck {
     return this.scratch !== null
   }
 
+  /** Farten decken spiller med når ingen holder i platen (tempo × skyv). */
+  get normalRate(): number {
+    return this.rate * this.bend
+  }
+
+  /** Farten hånda (eller den frie platen) drar lyden med akkurat nå. 0 når ingen holder. */
+  get scratchSpeed(): number {
+    return this.scratch?.rate ?? 0
+  }
+
   get duration(): number {
     return this.buffer?.duration ?? 0
   }
@@ -98,6 +108,7 @@ export class Deck {
 
   load(buffer: AudioBuffer): void {
     this.loop = null
+    this.scratch = null
     this.stopSource()
     this.buffer = buffer
     this.clock.stop(this.ctx.currentTime)
@@ -106,6 +117,7 @@ export class Deck {
 
   unload(): void {
     this.loop = null
+    this.scratch = null
     this.stopSource()
     this.buffer = null
     this.clock.stop(this.ctx.currentTime)
@@ -165,10 +177,11 @@ export class Deck {
   /**
    * Hånda tar tak i platen. Låten står stille til hånda beveger seg.
    * Står decken stille, kan du likevel scratche – da høres lyden bare mens hånda beveger seg.
+   * `rate` er farten platen har idet den tas over (0 = holdes helt stille).
    */
-  beginScratch(): void {
+  beginScratch(rate = 0): void {
     if (!this.buffer || this.scratch) return
-    this.scratch = { wasPlaying: this.source !== null, rate: 0 }
+    this.scratch = { wasPlaying: this.source !== null, rate }
     if (this.source) this.applyRate()
     else this.startSource(this.position)
   }

@@ -19,7 +19,7 @@ import { patchSettings } from '../state/settingsStore'
 import { useUiStore } from '../state/uiStore'
 import { applyRecordingResult, getRecorder } from './recordingLogic'
 import { cancelAutoMix, startAutoMix } from './autoMixLogic'
-import { jogEnd, jogMove, jogStart, setNudgeButton } from './jogLogic'
+import { haltPlatter, jogEnd, jogMove, jogStart, motorStart, motorStop, setNudgeButton } from './jogLogic'
 import { turnsToSeconds } from '../audio/jogMath'
 import { folderErrorMessage, loadErrorMessage, trackProblemMessage } from './messages'
 import {
@@ -86,15 +86,18 @@ export async function dispatch(action: Action): Promise<void> {
       const deck = engine.decks[action.deck]
       if (!deck.isLoaded) return
       await engine.resume()
+      const decks = useAppStore.getState().decks
+      const synced = decks[action.deck].synced
       // Er decken synket, starter den med slagene oppå den andre decken.
-      if (useAppStore.getState().decks[action.deck].synced) syncPhase(action.deck)
-      deck.play()
+      if (synced) syncPhase(action.deck)
+      // Synket: start med en gang, ellers havner slagene ved siden av hverandre mens motoren drar opp.
+      if (!motorStart(action.deck, synced || decks[otherDeck(action.deck)].synced)) deck.play()
       updateDeck(action.deck, { isPlaying: true })
       realignFollower(action.deck)
       break
     }
     case 'deck/pause':
-      engine.decks[action.deck].pause()
+      if (!motorStop(action.deck)) engine.decks[action.deck].pause()
       updateDeck(action.deck, { isPlaying: false })
       break
     case 'deck/seek':
@@ -106,6 +109,7 @@ export async function dispatch(action: Action): Promise<void> {
       const id = action.deck
       const deck = engine.decks[id]
       if (!deck.isLoaded) return
+      haltPlatter(id)
       if (deck.isPlaying) {
         // Spiller den: tilbake til cue-punktet og stopp.
         deck.pause()

@@ -34,6 +34,8 @@ export interface Settings {
   /** Kan trim, EQ og filter styres med tastaturet? */
   knobKeys: boolean
   keyStep: KeyStep
+  /** Platene oppfører seg som en ekte platespiller: motoren bruker litt tid på å starte og bremse. */
+  vinylMotion: boolean
 }
 
 export function defaultSettings(): Settings {
@@ -48,7 +50,8 @@ export function defaultSettings(): Settings {
     theme: 'dark',
     accent: 'classic',
     knobKeys: true,
-    keyStep: 'normal'
+    keyStep: 'normal',
+    vinylMotion: true
   }
 }
 
@@ -66,6 +69,7 @@ export function parseSettingsPatch(value: unknown): Partial<Settings> | null {
   if (typeof v.tipsEnabled === 'boolean') patch.tipsEnabled = v.tipsEnabled
   if (typeof v.helpBubbles === 'boolean') patch.helpBubbles = v.helpBubbles
   if (typeof v.knobKeys === 'boolean') patch.knobKeys = v.knobKeys
+  if (typeof v.vinylMotion === 'boolean') patch.vinylMotion = v.vinylMotion
   if (isStringArray(v.completedLessons)) patch.completedLessons = [...new Set(v.completedLessons)]
   if (isStringArray(v.shownTips)) patch.shownTips = [...new Set(v.shownTips)]
   if (oneOf(LANGUAGES, v.language)) patch.language = v.language
