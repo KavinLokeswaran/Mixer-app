@@ -93,4 +93,4 @@ export type Action =
 export type ActionType = Action['type']
 
 /** Innstillingene som kan endres fritt fra innstillingssiden. */
-export type PreferenceKey = 'helpBubbles' | 'language' | 'theme' | 'accent' | 'knobKeys' | 'keyStep'
+export type PreferenceKey = 'helpBubbles' | 'language' | 'theme' | 'accent' | 'knobKeys' | 'keyStep' | 'vinylMotion'

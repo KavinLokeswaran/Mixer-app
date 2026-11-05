@@ -292,6 +292,23 @@ export function SettingsPage(): React.JSX.Element | null {
           </section>
 
           <section className="settings__section">
+            <h3 className="settings__heading">{tr('Platene', 'Platters')}</h3>
+            <Row
+              title={tr('Som en ekte platespiller', 'Like a real turntable')}
+              desc={tr(
+                'Platen bruker et øyeblikk på å komme opp i fart og bremse ned, og slipper du den etter en scratch, snurrer den videre. Slå av for å starte og stoppe med en gang.',
+                'The platter takes a moment to spin up and brake down, and keeps spinning when you let go after a scratch. Turn off to start and stop instantly.'
+              )}
+            >
+              <Switch
+                checked={s.vinylMotion}
+                label={tr('Som en ekte platespiller', 'Like a real turntable')}
+                onChange={(vinylMotion) => set({ vinylMotion })}
+              />
+            </Row>
+          </section>
+
+          <section className="settings__section">
             <h3 className="settings__heading">{tr('Tastatur', 'Keyboard')}</h3>
             <Row
               title={tr('Styr knottene med tastaturet', 'Control the knobs with the keyboard')}

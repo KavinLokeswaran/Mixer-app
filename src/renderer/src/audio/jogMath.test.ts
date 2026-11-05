@@ -7,6 +7,7 @@ import {
   PLATTER_TURNS_PER_SECOND,
   platterAngle,
   scratchRate,
+  spinToward,
   turnDelta,
   turnsToSeconds
 } from './jogMath'
@@ -61,5 +62,38 @@ describe('skyv (nudge)', () => {
     expect(next).toBeGreaterThan(0)
     expect(next).toBeLessThan(1)
     expect(approach(0, 1, 10, 0.05)).toBeCloseTo(1, 6)
+  })
+})
+
+describe('motoren', () => {
+  it('drar platen opp i fart på et kort øyeblikk, uten å gå forbi', () => {
+    let speed = 0
+    let t = 0
+    while (speed < 1 && t < 2) {
+      speed = spinToward(speed, 1, 1 / 60, true)
+      t += 1 / 60
+    }
+    expect(speed).toBe(1)
+    expect(t).toBeGreaterThan(0.1)
+    expect(t).toBeLessThan(0.4)
+  })
+
+  it('bremser ned litt mykere enn den starter', () => {
+    const steps = (from: number, motorOn: boolean): number => {
+      let speed = from
+      let n = 0
+      while (speed !== 0 && n < 1000) {
+        speed = spinToward(speed, 0, 1 / 60, motorOn)
+        n++
+      }
+      return n
+    }
+    expect(steps(1, false)).toBeGreaterThan(steps(1, true))
+  })
+
+  it('tar igjen en backspin', () => {
+    let speed = -4
+    for (let i = 0; i < 120; i++) speed = spinToward(speed, 1, 1 / 60, true)
+    expect(speed).toBe(1)
   })
 })

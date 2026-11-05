@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { dispatch } from '../actions/dispatch'
+import { platterPosition } from '../actions/jogLogic'
 import { getEngine } from '../audio/AudioEngine'
 import { platterAngle, turnDelta } from '../audio/jogMath'
 import type { DeckId } from '../audio/types'
@@ -45,7 +46,7 @@ export function Platter({ id }: { id: DeckId }): React.JSX.Element {
     let lastProgress = -1
     let lastEnding = false
     return onTick(() => {
-      const angle = Math.round(platterAngle(deck.position) * 10) / 10
+      const angle = Math.round(platterAngle(platterPosition(id)) * 10) / 10
       if (angle !== lastAngle && discRef.current) {
         discRef.current.setAttribute('transform', `rotate(${angle} ${C} ${C})`)
         lastAngle = angle
